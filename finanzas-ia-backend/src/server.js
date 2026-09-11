@@ -10,7 +10,7 @@ import objetivosRouter from "./routes/objetivos.routes.js";
 import patrimonioRouter from "./routes/patrimonio.routes.js";
 
 const app = express();
-const PUERTO = process.env.PUERTO || 3000;
+const PUERTO = process.env.PORT || process.env.PUERTO || 3000;
 
 app.use(express.json());
 app.use(cors());
