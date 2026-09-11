@@ -1,0 +1,618 @@
+:root {
+  --bg: #F6F5F1;
+  --surface: #FFFFFF;
+  --ink: #1F2A24;
+  --muted: #6B7570;
+  --border: #E3E1D9;
+  --accent: #2F6F4F;
+  --accent-soft: #E8F0EA;
+  --income: #2F6F4F;
+  --expense: #B4483A;
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Barra lateral */
+.sidebar {
+  width: 220px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 24px 0;
+  flex-shrink: 0;
+}
+
+.sidebar-brand {
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 0 24px 20px;
+  color: var(--accent);
+}
+
+.sidebar-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  display: block;
+  padding: 10px 24px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  border-left: 3px solid transparent;
+}
+
+.nav-link:hover {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.nav-link.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 600;
+}
+
+/* Contenido */
+.content {
+  flex: 1;
+  padding: 32px 40px;
+  max-width: 900px;
+}
+
+.view.hidden {
+  display: none;
+}
+
+.view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.view-header h1 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.view-header input {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  width: 220px;
+}
+
+.view-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 9px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-secundario {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 9px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.form-movimiento {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-movimiento.hidden {
+  display: none;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.form-row label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.form-row input,
+.form-row select {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.form-error {
+  color: var(--expense);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.form-error.hidden {
+  display: none;
+}
+
+/* Tarjetas resumen */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.card-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.card-value.income { color: var(--income); }
+.card-value.expense { color: var(--expense); }
+
+.section-title {
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+}
+
+/* Objetivos */
+.objetivos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.objetivo-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+}
+
+.objetivo-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.objetivo-bar-bg {
+  background: var(--accent-soft);
+  border-radius: 6px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.objetivo-bar-fill {
+  background: var(--accent);
+  height: 100%;
+}
+
+/* Tabla de movimientos */
+.movimientos-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.movimientos-table th,
+.movimientos-table td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.movimientos-table th {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.movimientos-table td.importe.income { color: var(--income); }
+.movimientos-table td.importe.expense { color: var(--expense); }
+
+/* Cuentas */
+.cuentas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.cuenta-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.cuenta-nombre {
+  font-weight: 600;
+}
+
+.cuenta-banco {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* Mapa de gastos */
+.gastos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.gasto-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+}
+
+.gasto-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.gasto-bar-bg {
+  background: var(--accent-soft);
+  border-radius: 6px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.gasto-bar-fill {
+  background: var(--expense);
+  height: 100%;
+}
+
+/* Créditos */
+.creditos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+/* Gráfico de barras simple (todos los valores positivos, crecen desde abajo) */
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 160px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 28px;
+}
+
+.chart-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+}
+
+.chart-bar-track {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.chart-bar-fill {
+  width: 100%;
+  background: var(--accent);
+  border-radius: 3px 3px 0 0;
+  min-height: 2px;
+}
+
+.chart-bar-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+/* Gráfico divergente (valores positivos hacia arriba, negativos hacia abajo) */
+.chart-diverging {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  height: 160px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 28px;
+}
+
+.chart-diverging-track {
+  flex: 1;
+  position: relative;
+  height: 100%;
+}
+
+.chart-diverging-track::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  border-top: 1px solid var(--border);
+}
+
+.chart-diverging-fill {
+  position: absolute;
+  width: 100%;
+  border-radius: 3px;
+  min-height: 2px;
+}
+
+.chart-diverging-fill.income { background: var(--income); }
+.chart-diverging-fill.expense { background: var(--expense); }
+
+/* Alertas */
+.alertas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.alerta-item {
+  background: #FBEFEC;
+  border: 1px solid #E8C9C2;
+  border-left: 4px solid var(--expense);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 0.9rem;
+}
+
+.alerta-item.ok {
+  background: var(--accent-soft);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+}
+
+/* Simulador */
+.view-description {
+  color: var(--muted);
+  margin-top: -12px;
+  margin-bottom: 20px;
+}
+
+.simulador-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.simulador-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.simulador-form input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.simulador-form span {
+  align-self: flex-end;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.sim-comparacion {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.kpi-cards {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+/* Botones de acción (editar/eliminar) */
+.acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icono {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.btn-icono:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.btn-icono-borrar:hover {
+  background: #FBEFEC;
+  color: var(--expense);
+  border-color: #E8C9C2;
+}
+
+.movimientos-table td.acciones {
+  white-space: nowrap;
+}
+
+.cuenta-item {
+  align-items: center;
+}
+
+.cuenta-item-derecha {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.objetivo-item .acciones {
+  margin-top: 10px;
+  justify-content: flex-end;
+}
+
+/* Pantalla de login */
+.pantalla-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.pantalla-login.hidden {
+  display: none;
+}
+
+.login-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.login-card h1 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: var(--accent);
+}
+
+.login-subtitulo {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+#form-login, #form-registro {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#form-login label, #form-registro label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+#form-login input, #form-registro input {
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.sidebar-logout {
+  margin: 16px 24px 0;
+  width: calc(100% - 48px);
+}
+
+.app.hidden {
+  display: none;
+}

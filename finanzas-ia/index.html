@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finanzas IA</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Pantalla de login: tapa todo hasta que inicies sesión -->
+  <div id="pantalla-login" class="pantalla-login">
+    <div class="login-card">
+      <h1>Mis Finanzas</h1>
+      <p class="login-subtitulo">Iniciá sesión para ver tus datos</p>
+
+      <form id="form-login">
+        <label>Usuario <input type="text" id="login-usuario" required autofocus></label>
+        <label>Contraseña <input type="password" id="login-password" required></label>
+        <button type="submit" class="btn-primary">Ingresar</button>
+      </form>
+
+      <button id="boton-mostrar-registro" class="btn-link">¿No tenés cuenta? Creá una</button>
+
+      <form id="form-registro" class="hidden">
+        <label>Usuario nuevo <input type="text" id="registro-usuario" required></label>
+        <label>Contraseña (mín. 6 caracteres) <input type="password" id="registro-password" required></label>
+        <button type="submit" class="btn-primary">Crear cuenta</button>
+      </form>
+
+      <p id="login-error" class="form-error hidden"></p>
+    </div>
+  </div>
+
+  <div class="app hidden" id="app-principal">
+
+    <!-- Barra lateral de navegación -->
+    <nav class="sidebar">
+      <div class="sidebar-brand">Finanzas IA</div>
+      <ul class="sidebar-nav">
+        <li><a href="#" class="nav-link active" data-view="inicio">Inicio</a></li>
+        <li><a href="#" class="nav-link" data-view="movimientos">Movimientos</a></li>
+        <li><a href="#" class="nav-link" data-view="cuentas">Cuentas</a></li>
+        <li><a href="#" class="nav-link" data-view="objetivos">Objetivos</a></li>
+        <li><a href="#" class="nav-link" data-view="gastos">Mapa de gastos</a></li>
+        <li><a href="#" class="nav-link" data-view="patrimonio">Patrimonio</a></li>
+        <li><a href="#" class="nav-link" data-view="dashboards">Dashboards</a></li>
+        <li><a href="#" class="nav-link" data-view="simulador">Simulador</a></li>
+      </ul>
+      <button id="boton-logout" class="btn-secundario sidebar-logout">Cerrar sesión</button>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="content">
+
+      <!-- Vista: Inicio -->
+      <section id="view-inicio" class="view">
+        <header class="view-header">
+          <h1>Resumen del mes</h1>
+        </header>
+
+        <div class="summary-cards">
+          <div class="card">
+            <span class="card-label">Ingresos</span>
+            <span class="card-value income" id="total-ingresos">$0</span>
+          </div>
+          <div class="card">
+            <span class="card-label">Gastos</span>
+            <span class="card-value expense" id="total-gastos">$0</span>
+          </div>
+          <div class="card">
+            <span class="card-label">Saldo del mes</span>
+            <span class="card-value" id="total-saldo">$0</span>
+          </div>
+        </div>
+
+        <h2 class="section-title">Objetivos de ahorro</h2>
+        <div id="objetivos-list" class="objetivos-list"></div>
+      </section>
+
+      <!-- Vista: Movimientos -->
+      <section id="view-movimientos" class="view hidden">
+        <header class="view-header">
+          <h1>Movimientos</h1>
+          <div class="view-header-actions">
+            <input type="text" id="buscador" placeholder="Buscar por comercio...">
+            <button id="boton-agregar" class="btn-primary">+ Agregar movimiento</button>
+          </div>
+        </header>
+
+        <form id="form-movimiento" class="form-movimiento hidden">
+          <input type="hidden" id="f-id-editando">
+          <div class="form-row">
+            <label>Fecha <input type="date" id="f-fecha" required></label>
+            <label>Comercio <input type="text" id="f-comercio" required></label>
+          </div>
+          <div class="form-row">
+            <label>Categoría <input type="text" id="f-categoria" required></label>
+            <label>Subcategoría <input type="text" id="f-subcategoria"></label>
+          </div>
+          <div class="form-row">
+            <label>Cuenta
+              <select id="f-cuenta" required></select>
+            </label>
+            <label>Medio <input type="text" id="f-medio" placeholder="Tarjeta, Transferencia..."></label>
+          </div>
+          <div class="form-row">
+            <label>Importe (negativo = gasto, positivo = ingreso)
+              <input type="number" id="f-importe" required>
+            </label>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="boton-guardar-movimiento">Guardar</button>
+            <button type="button" id="boton-cancelar" class="btn-secundario">Cancelar</button>
+          </div>
+          <p id="form-error" class="form-error hidden"></p>
+        </form>
+
+        <table class="movimientos-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Comercio</th>
+              <th>Categoría</th>
+              <th>Cuenta</th>
+              <th>Importe</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="movimientos-body"></tbody>
+        </table>
+      </section>
+
+      <!-- Vista: Cuentas -->
+      <section id="view-cuentas" class="view hidden">
+        <header class="view-header">
+          <h1>Cuentas</h1>
+          <button id="boton-agregar-cuenta" class="btn-primary">+ Agregar cuenta</button>
+        </header>
+
+        <form id="form-cuenta" class="form-movimiento hidden">
+          <input type="hidden" id="c-id-editando">
+          <div class="form-row">
+            <label>Nombre <input type="text" id="c-nombre" required></label>
+            <label>Banco <input type="text" id="c-banco"></label>
+          </div>
+          <div class="form-row">
+            <label>Titular <input type="text" id="c-titular"></label>
+            <label>Saldo inicial <input type="number" id="c-saldo" required></label>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="boton-guardar-cuenta">Guardar</button>
+            <button type="button" id="boton-cancelar-cuenta" class="btn-secundario">Cancelar</button>
+          </div>
+          <p id="form-cuenta-error" class="form-error hidden"></p>
+        </form>
+
+        <div id="cuentas-list" class="cuentas-list"></div>
+      </section>
+
+      <!-- Vista: Objetivos -->
+      <section id="view-objetivos" class="view hidden">
+        <header class="view-header">
+          <h1>Objetivos de ahorro</h1>
+          <button id="boton-agregar-objetivo" class="btn-primary">+ Agregar objetivo</button>
+        </header>
+
+        <form id="form-objetivo" class="form-movimiento hidden">
+          <input type="hidden" id="o-id-editando">
+          <div class="form-row">
+            <label>Nombre <input type="text" id="o-nombre" required></label>
+          </div>
+          <div class="form-row">
+            <label>Meta <input type="number" id="o-meta" required></label>
+            <label>Acumulado <input type="number" id="o-acumulado" required></label>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="boton-guardar-objetivo">Guardar</button>
+            <button type="button" id="boton-cancelar-objetivo" class="btn-secundario">Cancelar</button>
+          </div>
+          <p id="form-objetivo-error" class="form-error hidden"></p>
+        </form>
+
+        <div id="objetivos-crud-list" class="objetivos-list"></div>
+      </section>
+
+      <!-- Vista: Mapa de gastos -->
+      <section id="view-gastos" class="view hidden">
+        <header class="view-header">
+          <h1>Mapa de gastos por categoría</h1>
+        </header>
+        <div id="gastos-list" class="gastos-list"></div>
+      </section>
+
+      <!-- Vista: Patrimonio -->
+      <section id="view-patrimonio" class="view hidden">
+        <header class="view-header">
+          <h1>Lectura patrimonial</h1>
+        </header>
+
+        <div class="summary-cards">
+          <div class="card">
+            <span class="card-label">Activos + inversiones</span>
+            <span class="card-value income" id="total-activos">$0</span>
+          </div>
+          <div class="card">
+            <span class="card-label">Pasivos (deuda)</span>
+            <span class="card-value expense" id="total-pasivos">$0</span>
+          </div>
+          <div class="card">
+            <span class="card-label">Patrimonio neto</span>
+            <span class="card-value" id="total-patrimonio">$0</span>
+          </div>
+        </div>
+
+        <h2 class="section-title">Activos</h2>
+        <div id="activos-list" class="cuentas-list"></div>
+
+        <h2 class="section-title">Inversiones</h2>
+        <div id="inversiones-list" class="cuentas-list"></div>
+
+        <h2 class="section-title">Pasivos</h2>
+        <div id="pasivos-list" class="cuentas-list"></div>
+
+        <h2 class="section-title">Créditos activos</h2>
+        <div id="creditos-list" class="creditos-list"></div>
+      </section>
+
+      <!-- Vista: Dashboards -->
+      <section id="view-dashboards" class="view hidden">
+        <header class="view-header">
+          <h1>Dashboards</h1>
+        </header>
+
+        <h2 class="section-title">Indicadores clave</h2>
+        <div class="summary-cards kpi-cards" id="kpi-cards"></div>
+
+        <h2 class="section-title">Alertas</h2>
+        <div id="alertas-list" class="alertas-list"></div>
+
+        <h2 class="section-title">Ahorro neto · últimos 12 meses</h2>
+        <div id="chart-ahorro" class="chart-diverging"></div>
+
+        <h2 class="section-title">Patrimonio neto · últimos 12 meses</h2>
+        <div id="chart-patrimonio" class="chart-bars"></div>
+      </section>
+
+      <!-- Vista: Simulador -->
+      <section id="view-simulador" class="view hidden">
+        <header class="view-header">
+          <h1>Simulador financiero</h1>
+        </header>
+        <p class="view-description">
+          Movés estos controles para ver el impacto proyectado sin tocar tus datos reales.
+        </p>
+
+        <div class="simulador-form">
+          <label>
+            Reducir gastos generales
+            <input type="range" id="sim-reduccion-gastos" min="0" max="30" value="0">
+            <span id="sim-reduccion-gastos-valor">0%</span>
+          </label>
+
+          <label>
+            Aumentar ingresos
+            <input type="range" id="sim-aumento-ingresos" min="0" max="30" value="0">
+            <span id="sim-aumento-ingresos-valor">0%</span>
+          </label>
+
+          <label>
+            Ahorro extra deseado (monto fijo por mes)
+            <input type="range" id="sim-ahorro-extra" min="0" max="200000" step="10000" value="0">
+            <span id="sim-ahorro-extra-valor">$0</span>
+          </label>
+        </div>
+
+        <h2 class="section-title">Resultado proyectado</h2>
+        <div class="summary-cards">
+          <div class="card">
+            <span class="card-label">Ingresos proyectados</span>
+            <span class="card-value income" id="sim-ingresos">$0</span>
+          </div>
+          <div class="card">
+            <span class="card-label">Gastos proyectados</span>
+            <span class="card-value expense" id="sim-gastos">$0</span>
+          </div>
+          <div class="card">
+            <span class="card-label">Saldo proyectado</span>
+            <span class="card-value" id="sim-saldo">$0</span>
+          </div>
+        </div>
+        <p class="sim-comparacion" id="sim-comparacion"></p>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
