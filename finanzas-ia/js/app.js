@@ -3,9 +3,8 @@ function formatMoney(valor) {
   return valor.toLocaleString("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 });
 }
 
-// Dirección base del backend. Si algún día lo subís a un servidor real
-// (no tu compu), este es el único lugar que tendrías que cambiar.
-const API_URL = "http://localhost:3000/api";
+// Dirección base del backend, ya desplegado en Render
+const API_URL = "https://app-finanzas-gbia.onrender.com/api";
 
 // Guardamos los datos acá una vez que los leemos, para no tener que
 // volver a pedirlos cada vez que cambiamos de vista
