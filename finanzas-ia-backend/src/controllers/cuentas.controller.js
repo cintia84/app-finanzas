@@ -1,16 +1,19 @@
 import Cuenta from "../models/Cuenta.js";
 
 export async function obtenerCuentas(req, res) {
-  const cuentas = await Cuenta.find().select("-_id -__v");
+  const cuentas = await Cuenta.find({ usuarioId: req.usuario.id }).select("-_id -__v -usuarioId");
   res.json(cuentas);
 }
 
 export async function crearCuenta(req, res) {
   const { nombre, banco, titular, saldo } = req.body;
-  const id = req.body.id || `C${String(await Cuenta.countDocuments() + 1).padStart(3, "0")}`;
+  const cantidad = await Cuenta.countDocuments({ usuarioId: req.usuario.id });
+  const id = req.body.id || `C${String(cantidad + 1).padStart(3, "0")}`;
 
   try {
-    const nuevaCuenta = await Cuenta.create({ id, nombre, banco, titular, saldo: Number(saldo) });
+    const nuevaCuenta = await Cuenta.create({
+      usuarioId: req.usuario.id, id, nombre, banco, titular, saldo: Number(saldo)
+    });
     res.status(201).json(nuevaCuenta);
   } catch (error) {
     if (error.code === 11000) {
@@ -25,10 +28,10 @@ export async function actualizarCuenta(req, res) {
 
   try {
     const cuenta = await Cuenta.findOneAndUpdate(
-      { id: req.params.id },
+      { id: req.params.id, usuarioId: req.usuario.id },
       { nombre, banco, titular, saldo: Number(saldo) },
       { new: true }
-    ).select("-_id -__v");
+    ).select("-_id -__v -usuarioId");
 
     if (!cuenta) {
       return res.status(404).json({ error: `No existe una cuenta con id ${req.params.id}.` });
@@ -41,7 +44,7 @@ export async function actualizarCuenta(req, res) {
 
 export async function eliminarCuenta(req, res) {
   try {
-    const cuenta = await Cuenta.findOneAndDelete({ id: req.params.id });
+    const cuenta = await Cuenta.findOneAndDelete({ id: req.params.id, usuarioId: req.usuario.id });
     if (!cuenta) {
       return res.status(404).json({ error: `No existe una cuenta con id ${req.params.id}.` });
     }

@@ -1,8 +1,11 @@
 import mongoose from "mongoose";
 
 const evolucionAhorroSchema = new mongoose.Schema({
-  mes: { type: String, required: true, unique: true },
+  usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: "Usuario", required: true },
+  mes: { type: String, required: true },
   ahorroNeto: { type: Number, required: true }
 });
+
+evolucionAhorroSchema.index({ usuarioId: 1, mes: 1 }, { unique: true });
 
 export default mongoose.model("EvolucionAhorro", evolucionAhorroSchema);

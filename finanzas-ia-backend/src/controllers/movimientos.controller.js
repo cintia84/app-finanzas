@@ -1,18 +1,17 @@
 import Movimiento from "../models/Movimiento.js";
 
 export async function obtenerMovimientos(req, res) {
-  const movimientos = await Movimiento.find().select("-_id -__v");
+  const movimientos = await Movimiento.find({ usuarioId: req.usuario.id }).select("-_id -__v -usuarioId");
   res.json(movimientos);
 }
 
-// Ya no hay validación acá adentro: si llegamos hasta este punto,
-// es porque express-validator (en la ruta) ya revisó que todo esté bien.
 export async function crearMovimiento(req, res) {
   try {
-    const cantidad = await Movimiento.countDocuments();
+    const cantidad = await Movimiento.countDocuments({ usuarioId: req.usuario.id });
     const nuevoId = `M${String(cantidad + 1).padStart(5, "0")}`;
 
     const nuevoMovimiento = await Movimiento.create({
+      usuarioId: req.usuario.id,
       id: nuevoId,
       fecha: req.body.fecha,
       comercio: req.body.comercio,
@@ -32,7 +31,7 @@ export async function crearMovimiento(req, res) {
 export async function actualizarMovimiento(req, res) {
   try {
     const movimiento = await Movimiento.findOneAndUpdate(
-      { id: req.params.id },
+      { id: req.params.id, usuarioId: req.usuario.id },
       {
         fecha: req.body.fecha,
         comercio: req.body.comercio,
@@ -43,7 +42,7 @@ export async function actualizarMovimiento(req, res) {
         importe: Number(req.body.importe)
       },
       { new: true }
-    ).select("-_id -__v");
+    ).select("-_id -__v -usuarioId");
 
     if (!movimiento) {
       return res.status(404).json({ error: `No existe un movimiento con id ${req.params.id}.` });
@@ -56,7 +55,7 @@ export async function actualizarMovimiento(req, res) {
 
 export async function eliminarMovimiento(req, res) {
   try {
-    const movimiento = await Movimiento.findOneAndDelete({ id: req.params.id });
+    const movimiento = await Movimiento.findOneAndDelete({ id: req.params.id, usuarioId: req.usuario.id });
     if (!movimiento) {
       return res.status(404).json({ error: `No existe un movimiento con id ${req.params.id}.` });
     }
