@@ -11,7 +11,7 @@
   <!-- Pantalla de login: tapa todo hasta que inicies sesión -->
   <div id="pantalla-login" class="pantalla-login">
     <div class="login-card">
-      <h1>Mis Finanzas</h1>
+      <h1>Finanzas IA</h1>
       <p class="login-subtitulo">Iniciá sesión para ver tus datos</p>
 
       <form id="form-login">
@@ -213,16 +213,102 @@
           </div>
         </div>
 
-        <h2 class="section-title">Activos</h2>
+        <!-- Activos -->
+        <div class="section-header-row">
+          <h2 class="section-title">Activos</h2>
+          <button id="boton-agregar-activo" class="btn-primary btn-chico">+ Agregar</button>
+        </div>
+        <form id="form-activo" class="form-movimiento hidden">
+          <input type="hidden" id="act-id-editando">
+          <div class="form-row">
+            <label>Nombre <input type="text" id="act-nombre" required></label>
+            <label>Tipo <input type="text" id="act-tipo" placeholder="Inmueble, Vehículo..."></label>
+          </div>
+          <div class="form-row">
+            <label>Valor <input type="number" id="act-valor" required></label>
+            <label>Liquidez <input type="text" id="act-liquidez" placeholder="Alta, Media, Baja"></label>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="boton-guardar-activo">Guardar</button>
+            <button type="button" id="boton-cancelar-activo" class="btn-secundario">Cancelar</button>
+          </div>
+          <p id="form-activo-error" class="form-error hidden"></p>
+        </form>
         <div id="activos-list" class="cuentas-list"></div>
 
-        <h2 class="section-title">Inversiones</h2>
+        <!-- Inversiones -->
+        <div class="section-header-row">
+          <h2 class="section-title">Inversiones</h2>
+          <button id="boton-agregar-inversion" class="btn-primary btn-chico">+ Agregar</button>
+        </div>
+        <form id="form-inversion" class="form-movimiento hidden">
+          <input type="hidden" id="inv-id-editando">
+          <div class="form-row">
+            <label>Nombre <input type="text" id="inv-nombre" required></label>
+            <label>Tipo <input type="text" id="inv-tipo" placeholder="ETF, Fondo, Acciones..."></label>
+          </div>
+          <div class="form-row">
+            <label>Valor <input type="number" id="inv-valor" required></label>
+            <label>Rentabilidad del mes (%) <input type="number" step="0.01" id="inv-rentabilidad" placeholder="Ej: 2.5"></label>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="boton-guardar-inversion">Guardar</button>
+            <button type="button" id="boton-cancelar-inversion" class="btn-secundario">Cancelar</button>
+          </div>
+          <p id="form-inversion-error" class="form-error hidden"></p>
+        </form>
         <div id="inversiones-list" class="cuentas-list"></div>
 
-        <h2 class="section-title">Pasivos</h2>
+        <!-- Pasivos -->
+        <div class="section-header-row">
+          <h2 class="section-title">Pasivos</h2>
+          <button id="boton-agregar-pasivo" class="btn-primary btn-chico">+ Agregar</button>
+        </div>
+        <form id="form-pasivo" class="form-movimiento hidden">
+          <input type="hidden" id="pas-id-editando">
+          <div class="form-row">
+            <label>Nombre <input type="text" id="pas-nombre" required></label>
+            <label>Tipo <input type="text" id="pas-tipo" placeholder="Hipoteca, Consumo, Tarjeta..."></label>
+          </div>
+          <div class="form-row">
+            <label>Saldo <input type="number" id="pas-saldo" required></label>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="boton-guardar-pasivo">Guardar</button>
+            <button type="button" id="boton-cancelar-pasivo" class="btn-secundario">Cancelar</button>
+          </div>
+          <p id="form-pasivo-error" class="form-error hidden"></p>
+        </form>
         <div id="pasivos-list" class="cuentas-list"></div>
 
-        <h2 class="section-title">Créditos activos</h2>
+        <!-- Créditos -->
+        <div class="section-header-row">
+          <h2 class="section-title">Créditos activos</h2>
+          <button id="boton-agregar-credito" class="btn-primary btn-chico">+ Agregar</button>
+        </div>
+        <form id="form-credito" class="form-movimiento hidden">
+          <input type="hidden" id="cre-id-editando">
+          <div class="form-row">
+            <label>Tipo <input type="text" id="cre-tipo" placeholder="Consumo, Automotriz..." required></label>
+            <label>Institución <input type="text" id="cre-institucion" required></label>
+          </div>
+          <div class="form-row">
+            <label>Saldo actual <input type="number" id="cre-saldo" required></label>
+            <label>Tasa anual (%) <input type="number" step="0.01" id="cre-tasa"></label>
+          </div>
+          <div class="form-row">
+            <label>Cuotas restantes <input type="number" id="cre-cuotas-restantes"></label>
+            <label>Cuota mensual <input type="number" id="cre-cuota-mensual" required></label>
+          </div>
+          <div class="form-row">
+            <label>Destino <input type="text" id="cre-destino" placeholder="Ej: compra de auto"></label>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="boton-guardar-credito">Guardar</button>
+            <button type="button" id="boton-cancelar-credito" class="btn-secundario">Cancelar</button>
+          </div>
+          <p id="form-credito-error" class="form-error hidden"></p>
+        </form>
         <div id="creditos-list" class="creditos-list"></div>
       </section>
 

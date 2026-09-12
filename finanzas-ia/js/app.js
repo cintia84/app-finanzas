@@ -256,9 +256,15 @@ function renderPatrimonio() {
     item.innerHTML = `
       <div>
         <div class="cuenta-nombre">${a.nombre}</div>
-        <div class="cuenta-banco">${a.tipo} · ${a.liquidez}</div>
+        <div class="cuenta-banco">${a.tipo || ""} · ${a.liquidez || ""}</div>
       </div>
-      <div class="card-value">${formatMoney(a.valor)}</div>
+      <div class="cuenta-item-derecha">
+        <div class="card-value">${formatMoney(a.valor)}</div>
+        <div class="acciones">
+          <button class="btn-icono" data-accion="editar-activo" data-id="${a.id}">Editar</button>
+          <button class="btn-icono btn-icono-borrar" data-accion="borrar-activo" data-id="${a.id}">Eliminar</button>
+        </div>
+      </div>
     `;
     activosList.appendChild(item);
   });
@@ -273,12 +279,18 @@ function renderPatrimonio() {
     item.innerHTML = `
       <div>
         <div class="cuenta-nombre">${i.nombre}</div>
-        <div class="cuenta-banco">${i.tipo}</div>
+        <div class="cuenta-banco">${i.tipo || ""}</div>
       </div>
-      <div style="text-align:right">
-        <div class="card-value">${formatMoney(i.valor)}</div>
-        <div class="cuenta-banco ${rentabilidadPositiva ? "income" : "expense"}">
-          ${rentabilidadPositiva ? "▲" : "▼"} ${(i.rentabilidadMes * 100).toFixed(2)}% este mes
+      <div class="cuenta-item-derecha">
+        <div style="text-align:right">
+          <div class="card-value">${formatMoney(i.valor)}</div>
+          <div class="cuenta-banco ${rentabilidadPositiva ? "income" : "expense"}">
+            ${rentabilidadPositiva ? "▲" : "▼"} ${((i.rentabilidadMes || 0) * 100).toFixed(2)}% este mes
+          </div>
+        </div>
+        <div class="acciones">
+          <button class="btn-icono" data-accion="editar-inversion" data-id="${i.id}">Editar</button>
+          <button class="btn-icono btn-icono-borrar" data-accion="borrar-inversion" data-id="${i.id}">Eliminar</button>
         </div>
       </div>
     `;
@@ -294,9 +306,15 @@ function renderPatrimonio() {
     item.innerHTML = `
       <div>
         <div class="cuenta-nombre">${pas.nombre}</div>
-        <div class="cuenta-banco">${pas.tipo}</div>
+        <div class="cuenta-banco">${pas.tipo || ""}</div>
       </div>
-      <div class="card-value expense">${formatMoney(pas.saldo)}</div>
+      <div class="cuenta-item-derecha">
+        <div class="card-value expense">${formatMoney(pas.saldo)}</div>
+        <div class="acciones">
+          <button class="btn-icono" data-accion="editar-pasivo" data-id="${pas.id}">Editar</button>
+          <button class="btn-icono btn-icono-borrar" data-accion="borrar-pasivo" data-id="${pas.id}">Eliminar</button>
+        </div>
+      </div>
     `;
     pasivosList.appendChild(item);
   });
@@ -310,9 +328,15 @@ function renderPatrimonio() {
     item.innerHTML = `
       <div>
         <div class="cuenta-nombre">${c.tipo} · ${c.institucion}</div>
-        <div class="cuenta-banco">${c.destino} · quedan ${c.cuotasRestantes} cuotas de ${formatMoney(c.cuotaMensual)}</div>
+        <div class="cuenta-banco">${c.destino || ""} · quedan ${c.cuotasRestantes ?? "-"} cuotas de ${formatMoney(c.cuotaMensual)}</div>
       </div>
-      <div class="card-value expense">${formatMoney(c.saldoActual)}</div>
+      <div class="cuenta-item-derecha">
+        <div class="card-value expense">${formatMoney(c.saldoActual)}</div>
+        <div class="acciones">
+          <button class="btn-icono" data-accion="editar-credito" data-id="${c.id}">Editar</button>
+          <button class="btn-icono btn-icono-borrar" data-accion="borrar-credito" data-id="${c.id}">Eliminar</button>
+        </div>
+      </div>
     `;
     creditosList.appendChild(item);
   });
@@ -861,7 +885,158 @@ function configurarFormularioObjetivo() {
   });
 }
 
-// 16) Login, registro y logout
+// 16) CRUD de los ítems de Patrimonio (activos, pasivos, inversiones, créditos)
+// Los 4 se manejan igual: agregar/editar precarga un formulario, guardar hace
+// POST o PUT según corresponda, borrar pide confirmación y hace DELETE.
+const configuracionesPatrimonio = [
+  {
+    prefix: "act", tipoNombre: "activo", endpoint: "activos", arrayKey: "activos",
+    campos: [
+      { input: "nombre", body: "nombre" },
+      { input: "tipo", body: "tipo" },
+      { input: "valor", body: "valor", numero: true },
+      { input: "liquidez", body: "liquidez" }
+    ]
+  },
+  {
+    prefix: "inv", tipoNombre: "inversion", endpoint: "inversiones", arrayKey: "inversiones",
+    campos: [
+      { input: "nombre", body: "nombre" },
+      { input: "tipo", body: "tipo" },
+      { input: "valor", body: "valor", numero: true },
+      // En pantalla se ve en %, pero se guarda como fracción (2.5% -> 0.025)
+      { input: "rentabilidad", body: "rentabilidadMes", numero: true, aGuardar: v => v / 100, aMostrar: v => v * 100 }
+    ]
+  },
+  {
+    prefix: "pas", tipoNombre: "pasivo", endpoint: "pasivos", arrayKey: "pasivos",
+    campos: [
+      { input: "nombre", body: "nombre" },
+      { input: "tipo", body: "tipo" },
+      { input: "saldo", body: "saldo", numero: true }
+    ]
+  },
+  {
+    prefix: "cre", tipoNombre: "credito", endpoint: "creditos", arrayKey: "creditos",
+    campos: [
+      { input: "tipo", body: "tipo" },
+      { input: "institucion", body: "institucion" },
+      { input: "saldo", body: "saldoActual", numero: true },
+      { input: "tasa", body: "tasaAnual", numero: true, aGuardar: v => v / 100, aMostrar: v => v * 100 },
+      { input: "cuotas-restantes", body: "cuotasRestantes", numero: true },
+      { input: "cuota-mensual", body: "cuotaMensual", numero: true },
+      { input: "destino", body: "destino" }
+    ]
+  }
+];
+
+function abrirFormularioItemPatrimonio(config, item = null) {
+  const form = document.getElementById(`form-${config.tipoNombre}`);
+  const boton = document.getElementById(`boton-guardar-${config.tipoNombre}`);
+  const idEditando = document.getElementById(`${config.prefix}-id-editando`);
+
+  form.classList.remove("hidden");
+
+  if (item) {
+    idEditando.value = item.id;
+    config.campos.forEach(c => {
+      const input = document.getElementById(`${config.prefix}-${c.input}`);
+      const valor = item[c.body];
+      input.value = valor === undefined || valor === null ? "" : (c.aMostrar ? c.aMostrar(valor) : valor);
+    });
+    boton.textContent = "Guardar cambios";
+  } else {
+    form.reset();
+    idEditando.value = "";
+    boton.textContent = "Guardar";
+  }
+}
+
+function configurarCRUDPatrimonio(config) {
+  const form = document.getElementById(`form-${config.tipoNombre}`);
+  const botonAgregar = document.getElementById(`boton-agregar-${config.tipoNombre}`);
+  const botonCancelar = document.getElementById(`boton-cancelar-${config.tipoNombre}`);
+  const errorTexto = document.getElementById(`form-${config.tipoNombre}-error`);
+  const idEditando = document.getElementById(`${config.prefix}-id-editando`);
+  const lista = document.getElementById(`${config.endpoint}-list`);
+
+  botonAgregar.addEventListener("click", () => {
+    form.classList.contains("hidden") ? abrirFormularioItemPatrimonio(config) : form.classList.add("hidden");
+  });
+
+  botonCancelar.addEventListener("click", () => {
+    form.reset();
+    form.classList.add("hidden");
+    errorTexto.classList.add("hidden");
+  });
+
+  lista.addEventListener("click", async (evento) => {
+    const boton = evento.target.closest("button[data-accion]");
+    if (!boton) return;
+    const id = boton.dataset.id;
+
+    if (boton.dataset.accion === `editar-${config.tipoNombre}`) {
+      const item = datos.patrimonio[config.arrayKey].find(i => i.id === id);
+      abrirFormularioItemPatrimonio(config, item);
+    }
+
+    if (boton.dataset.accion === `borrar-${config.tipoNombre}`) {
+      if (!confirm(`¿Eliminar este ítem? Esta acción no se puede deshacer.`)) return;
+      const respuesta = await pedidoConToken(`${API_URL}/patrimonio/${config.endpoint}/${id}`, { method: "DELETE" });
+      if (respuesta.ok) {
+        await cargarDatos();
+      } else {
+        alert("No se pudo eliminar.");
+      }
+    }
+  });
+
+  form.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+    errorTexto.classList.add("hidden");
+
+    const body = {};
+    config.campos.forEach(c => {
+      const valorCrudo = document.getElementById(`${config.prefix}-${c.input}`).value;
+      const valor = c.numero ? Number(valorCrudo) : valorCrudo;
+      body[c.body] = c.aGuardar && valorCrudo !== "" ? c.aGuardar(valor) : valor;
+    });
+
+    const esEdicion = Boolean(idEditando.value);
+    const url = esEdicion
+      ? `${API_URL}/patrimonio/${config.endpoint}/${idEditando.value}`
+      : `${API_URL}/patrimonio/${config.endpoint}`;
+    const metodo = esEdicion ? "PUT" : "POST";
+
+    try {
+      const respuesta = await pedidoConToken(url, {
+        method: metodo,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+
+      if (!respuesta.ok) {
+        const error = await respuesta.json();
+        errorTexto.textContent = error.error || "No se pudo guardar.";
+        errorTexto.classList.remove("hidden");
+        return;
+      }
+
+      form.reset();
+      form.classList.add("hidden");
+      await cargarDatos();
+    } catch (error) {
+      errorTexto.textContent = "No se pudo conectar con el servidor.";
+      errorTexto.classList.remove("hidden");
+    }
+  });
+}
+
+function configurarFormulariosPatrimonio() {
+  configuracionesPatrimonio.forEach(configurarCRUDPatrimonio);
+}
+
+// 17) Login, registro y logout
 function mostrarApp() {
   document.getElementById("pantalla-login").classList.add("hidden");
   document.getElementById("app-principal").classList.remove("hidden");
@@ -976,6 +1151,7 @@ document.addEventListener("DOMContentLoaded", () => {
   configurarFormularioMovimiento();
   configurarFormularioCuenta();
   configurarFormularioObjetivo();
+  configurarFormulariosPatrimonio();
   configurarLogin();
 
   // Solo pedimos los datos si ya había una sesión iniciada antes
