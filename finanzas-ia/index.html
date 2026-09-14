@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Finanzas IA</title>
   <link rel="stylesheet" href="css/styles.css">
+  <script>
+    // Se aplica ACÁ, antes de pintar la página, para que no se vea
+    // un flash del tema claro justo antes de cambiar al oscuro
+    document.documentElement.dataset.theme = localStorage.getItem("tema") || "light";
+  </script>
 </head>
 <body>
 
@@ -47,6 +52,7 @@
         <li><a href="#" class="nav-link" data-view="dashboards">Dashboards</a></li>
         <li><a href="#" class="nav-link" data-view="simulador">Simulador</a></li>
       </ul>
+      <button id="boton-tema" class="sidebar-tema">🌙 Modo oscuro</button>
       <button id="boton-logout" class="btn-secundario sidebar-logout">Cerrar sesión</button>
     </nav>
 

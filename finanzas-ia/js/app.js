@@ -1143,6 +1143,25 @@ function configurarLogin() {
   botonLogout.addEventListener("click", cerrarSesion);
 }
 
+// 18) Modo oscuro / claro
+function configurarTema() {
+  const boton = document.getElementById("boton-tema");
+
+  function actualizarTextoBoton() {
+    const esOscuro = document.documentElement.dataset.theme === "dark";
+    boton.textContent = esOscuro ? "☀️ Modo claro" : "🌙 Modo oscuro";
+  }
+
+  actualizarTextoBoton();
+
+  boton.addEventListener("click", () => {
+    const nuevoTema = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = nuevoTema;
+    localStorage.setItem("tema", nuevoTema);
+    actualizarTextoBoton();
+  });
+}
+
 // Arrancamos todo cuando el HTML terminó de cargar
 document.addEventListener("DOMContentLoaded", () => {
   configurarNavegacion();
@@ -1153,6 +1172,7 @@ document.addEventListener("DOMContentLoaded", () => {
   configurarFormularioObjetivo();
   configurarFormulariosPatrimonio();
   configurarLogin();
+  configurarTema();
 
   // Solo pedimos los datos si ya había una sesión iniciada antes
   if (obtenerToken()) {
